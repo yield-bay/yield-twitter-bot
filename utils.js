@@ -32,8 +32,18 @@ function getToday() {
   return dd + " " + mm;
 }
 
+function farmUrl(farm) {
+  const utmLink =
+    "&utm_campaign=yieldbay-bot&utm_source=twitter&utm_medium=textlink";
+  return `https://list.yieldbay.io/farm/${farm.id}/?addr=${farm.asset.address}${utmLink}`.replace(
+    " ",
+    "%20"
+  );
+}
+
 module.exports = {
   formatFloat,
   toDollar,
   getToday,
+  farmUrl,
 };
