@@ -2,60 +2,66 @@ require("isomorphic-fetch");
 require("process");
 
 const rwClient = require("./twitterClient.js");
-const { formatFloat, toDollar } = require("./utils");
+const { formatFloat, toDollar, getToday } = require("./utils");
 
 let farms_apr, farms_safety, farms_tvl;
 let tweet_text_tvl;
 let tweet_text_apr;
 let tweet_text_score;
 
-//Final function that uploads media and sends tweet requests
+// Final function that uploads media and sends tweet requests
 const tweet = async () => {
   console.log("tweeting...");
   try {
     const mediaID_tvl = await rwClient.v1.uploadMedia("assets/tvl.png");
     const mediaID_apr = await rwClient.v1.uploadMedia("assets/yield.png");
     const mediaID_safety = await rwClient.v1.uploadMedia("assets/safety.png");
+
+    // Top TVL Farms
     await rwClient.v2.tweet({
       text: tweet_text_tvl,
       media: { media_ids: [mediaID_tvl] },
     });
+
+    // Top APR Farms
     await rwClient.v2.tweet({
       text: tweet_text_apr,
       media: { media_ids: [mediaID_apr] },
     });
+
+    // Top Safety Farms
     await rwClient.v2.tweet({
       text: tweet_text_score,
       media: { media_ids: [mediaID_safety] },
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
 const main = async () => {
   console.log("fetching api...");
-  let data = await (
-    await fetch("https://bay-api.onrender.com/graphql", {
+  const data = await (
+    await fetch(process.env.API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         query: `
-      {
-  	farms {
-  		chain
-          tvl
-  		protocol
-  		asset {
-  			symbol
-  		}
-  		safetyScore
-  		apr {
-  			base
-  			reward
-  		}
-  	}
-  }`,
+          {
+            farms {
+              chain
+              tvl
+              protocol
+              asset {
+                symbol
+              }
+              safetyScore
+              apr {
+                base
+                reward
+              }
+            }
+          }`,
       }),
     })
   ).json();
@@ -74,25 +80,8 @@ const main = async () => {
   });
   farms_apr = await farms.slice(0, 3);
 
-  var today = new Date();
-  var dd = today.getDate();
-  const month = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  let mm = month[today.getMonth()];
-  str_today = dd + " " + mm;
+  // Today's date in "dd mm" format
+  str_today = getToday();
 
   // Tweet string formation
   tweet_text_tvl = `GM Sailors 🌊\n\nHighest TVL Farms on list.yieldbay.io (${str_today})  ↓\n\n→ ${

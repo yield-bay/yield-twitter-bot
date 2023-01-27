@@ -11,7 +11,29 @@ function toDollar(num) {
   return "$" + num.toString();
 }
 
+function getToday() {
+  var today = new Date();
+  var dd = today.getDate();
+  const month = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  let mm = month[today.getMonth()];
+  return dd + " " + mm;
+}
+
 module.exports = {
   formatFloat,
   toDollar,
+  getToday,
 };
