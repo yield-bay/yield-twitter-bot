@@ -38,7 +38,7 @@ const main = async () => {
   farms_apr = await farms.slice(0, 3);
 
   // Today's date in "dd mm" format
-  str_today = getToday();
+  const str_today = getToday();
 
   // Main tweet string formation
   tweet_text_tvl = `GM Sailors 🌊\n\nHighest TVL Farms on list.yieldbay.io (${str_today})  ↓\n\n${getTweetText(
